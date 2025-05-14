@@ -150,9 +150,7 @@ class GPTVideoModel:
 
         return base64Frames
 
-    def prompt_to_answer_multichoice(
-        self, prompt, video_path, timestamp_start, timestamp_end
-    ):
+    def prompt_to_answer_multichoice(self, prompt, video_path, timestamp_start, timestamp_end):
         frames = self.extract_frames(video_path, timestamp_start, timestamp_end)
         PROMPT_MESSAGES = [
             {
@@ -195,9 +193,7 @@ class GPTAudioVideoModel(BaseModel):
             sample["prompt_type"] == "multimodal"
             or sample["prompt_type"] == "pipeline_event_classification"
         )
-        assert (
-            sample["sound_name"] is not None
-        ), "Sound name is required for GPTAudioVideoModel!"
+        assert sample["sound_name"] is not None, "Sound name is required for GPTAudioVideoModel!"
         # Use the appropriate prompt generator for all prompt types
         model_input = {
             "prompt": prompt_factory["pipeline_video"](
@@ -218,10 +214,7 @@ class GPTAudioVideoModel(BaseModel):
         prompt_type: str,
         **kwargs,
     ) -> Dict:
-        assert (
-            prompt_type == "multimodal"
-            or prompt_type == "pipeline_event_classification"
-        )
+        assert prompt_type == "multimodal" or prompt_type == "pipeline_event_classification"
 
         if prompt_type == "multimodal":
             audio_response = self.audio_model.prompt_to_extract_timestamps(
@@ -232,9 +225,7 @@ class GPTAudioVideoModel(BaseModel):
             if "none" in audio_response.lower():
                 # NOTE: we assume that None of the above is always option (E)
                 return {"response_text": "(E)"}
-            timestamp_start, timestamp_end = self.audio_model.extract_timestamps(
-                audio_response
-            )
+            timestamp_start, timestamp_end = self.audio_model.extract_timestamps(audio_response)
             file_path = model_input["file_path"]["video"]
 
             if not timestamp_start:

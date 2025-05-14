@@ -11,11 +11,14 @@ from models import BaseModel
 # from external.video_llama_audio.videollama2 import mm_infer, model_init
 # (2) Then remove the dummy methods
 
+
 def model_init(*args, **kwargs):
     pass
 
+
 def mm_infer(*args, **kwargs):
     pass
+
 
 class VideoLlamaModel(BaseModel):
 
@@ -56,9 +59,7 @@ class VideoLlamaModel(BaseModel):
         else:
             raise NotImplementedError(f"Unsupported prompt type: {prompt_type}")
 
-        audio_video_tensor = preprocess(
-            str(file_path), **({"va": va} if va is not None else {})
-        )
+        audio_video_tensor = preprocess(str(file_path), **({"va": va} if va is not None else {}))
 
         response_text = mm_infer(
             audio_video_tensor,
@@ -72,9 +73,7 @@ class VideoLlamaModel(BaseModel):
         matched_letter = self.extract_letter(response_text)
 
         return {
-            "response_text": (
-                f"({matched_letter})" if matched_letter else "No answer found!"
-            ),
+            "response_text": (f"({matched_letter})" if matched_letter else "No answer found!"),
             "llm_output": response_text,
         }
 
@@ -87,9 +86,7 @@ class VideoLlamaModel(BaseModel):
         file_path = sample["file_path"]
 
         if prompt_type == "multimodal":
-            video_file_path, audio_file_path = file_path.get("video"), file_path.get(
-                "audio"
-            )
+            video_file_path, audio_file_path = file_path.get("video"), file_path.get("audio")
             prompt_category = "multimodal"
         elif prompt_type in [
             "audio",

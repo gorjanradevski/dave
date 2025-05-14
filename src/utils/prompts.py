@@ -66,9 +66,7 @@ QUESTION_TEMPLATES = {
         "what the person is doing in the video. "
         "Choose the most appropriate option, even if it's does not appear to be an exact match. "
     ),
-    "pipeline_video": (
-        "These are frames from a video. What is the person doing in this video?"
-    ),
+    "pipeline_video": ("These are frames from a video. What is the person doing in this video?"),
 }
 
 # Create the prompt factory

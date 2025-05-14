@@ -44,9 +44,7 @@ def filter_available_samples(
         if files_available:
             filtered_samples.append(sample)
 
-    print(
-        f"Filtered dataset: {len(filtered_samples)}/{len(huggingface_dataset)} samples available"
-    )
+    print(f"Filtered dataset: {len(filtered_samples)}/{len(huggingface_dataset)} samples available")
     return filtered_samples
 
 
@@ -68,16 +66,10 @@ def filter_by_prompt(data_samples: List[Dict[str, Any]], prompt_type: str):
 
 def parse_arguments() -> argparse.Namespace:
     """Parse and return command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Process and analyze video-based datasets."
-    )
-    parser.add_argument(
-        "--split", type=str, required=True, help="Split name: epic or ego4d."
-    )
+    parser = argparse.ArgumentParser(description="Process and analyze video-based datasets.")
+    parser.add_argument("--split", type=str, required=True, help="Split name: epic or ego4d.")
     parser.add_argument("--google_id_mapping_path", type=str)
-    parser.add_argument(
-        "--verbose", action="store_true", help="Enable verbose logging."
-    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging.")
     parser.add_argument(
         "--model_names",
         type=str,
@@ -100,10 +92,7 @@ def main():
 
     # Check model names
     if "pipeline_event_classification" in args.prompt_types:
-        if (
-            "gemini-pipeline" not in args.model_names
-            and "openai" not in args.model_names
-        ):
+        if "gemini-pipeline" not in args.model_names and "openai" not in args.model_names:
             raise ValueError(
                 "Pipeline event classification requires a pipeline model: gemini-pipeline or openai"
             )
@@ -136,9 +125,7 @@ def main():
     latex_prompt_types = " & ".join(args.prompt_types)
 
     all_predictions = {
-        "predictions": {
-            mn: {p: [] for p in args.prompt_types} for mn in args.model_names
-        },
+        "predictions": {mn: {p: [] for p in args.prompt_types} for mn in args.model_names},
     }
 
     for model_name in args.model_names:
@@ -175,10 +162,7 @@ def main():
                         ground_truth=sample["ground_truth"],
                     )
                     timestamps_acc_dict = {"iou": -1, "tolerance_accuracy": -1}
-                    if (
-                        sample["type"] == "regular"
-                        and "predicted_timestamps" in response_dict
-                    ):
+                    if sample["type"] == "regular" and "predicted_timestamps" in response_dict:
                         timestamps_acc_dict = evaluator.compute_timestamp_accuracy(
                             *response_dict["predicted_timestamps"],
                             *sample["ground_truth_timestamps"],
@@ -193,9 +177,7 @@ def main():
                             "is_correct": is_correct,
                             "timestamp_iou": timestamps_acc_dict["iou"],
                             "timestamp_acc": timestamps_acc_dict["tolerance_accuracy"],
-                            "overlayed_event_index": sample.get(
-                                "overlayed_event_index", None
-                            ),
+                            "overlayed_event_index": sample.get("overlayed_event_index", None),
                         }
                     )
                 except Exception as e:

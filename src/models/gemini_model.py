@@ -30,9 +30,7 @@ class GeminiModel(BaseModel):
             model_name=model_name, generation_config={"temperature": 0.0}
         )
         self.google_id_mapping = kwargs.pop("google_id_mapping", None)
-        assert (
-            self.google_id_mapping is not None
-        ), "Google ID mapping is required for GeminiModel"
+        assert self.google_id_mapping is not None, "Google ID mapping is required for GeminiModel"
 
     def get_uploaded_file(self, file_path: Path) -> GenAiFile:
         """Get the GenAI file using the pre-uploaded file ID."""
@@ -61,9 +59,7 @@ class GeminiModel(BaseModel):
         # Get the data directory path from the keyword arguments
         data_dir_path = kwargs.get("data_dir_path", None)
 
-        assert (
-            data_dir_path is not None
-        ), "Data directory path is required for GeminiModel!"
+        assert data_dir_path is not None, "Data directory path is required for GeminiModel!"
         model_input = {
             "prompt": prompt_factory[sample["prompt_type"]](
                 sound_name=sound_name,
@@ -84,9 +80,7 @@ class GeminiModel(BaseModel):
                 for k, v in sample["file_path"].items()
             }
         else:
-            model_input["file_path"] = Path("data") / sample["file_path"].relative_to(
-                data_dir_path
-            )
+            model_input["file_path"] = Path("data") / sample["file_path"].relative_to(data_dir_path)
 
         return model_input
 
@@ -99,9 +93,7 @@ class GeminiModel(BaseModel):
             if isinstance(model_input["file_path"], str) or isinstance(
                 model_input["file_path"], Path
             ):
-                model_input["genai_file"] = self.get_uploaded_file(
-                    model_input["file_path"]
-                )
+                model_input["genai_file"] = self.get_uploaded_file(model_input["file_path"])
             # In this case we assert whether the prompt_type is multimodal, and we get only the video part
             elif isinstance(model_input["file_path"], dict):
                 assert prompt_type == "multimodal", "Prompt type must be multimodal!"
@@ -118,9 +110,7 @@ class GeminiModel(BaseModel):
         # Try to obtain response with retries
         for attempt in range(10):
             try:
-                response = self.model.generate_content(
-                    content, request_options={"timeout": 600}
-                )
+                response = self.model.generate_content(content, request_options={"timeout": 600})
                 break  # Exit loop immediately on success
             except (ResourceExhausted, InternalServerError):
                 if attempt == 9:  # Last attempt
@@ -136,9 +126,7 @@ class GeminiModel(BaseModel):
         # For temporal video task, we need to extract a sequence of choices
         if prompt_type == "temporal_video":
             matches = re.findall(r"\(([A-E])\)", response_text)
-            final_response = (
-                [f"({l})" for l in matches] if matches else "No valid sequence found!"
-            )
+            final_response = [f"({l})" for l in matches] if matches else "No valid sequence found!"
             return {"response_text": final_response}
 
         match = re.search(r"\((\w)\)", response_text)
@@ -253,9 +241,7 @@ class GeminiPipeline(BaseModel):
             sample["prompt_type"] == "multimodal"
             or sample["prompt_type"] == "pipeline_event_classification"
         )
-        assert (
-            sample["sound_name"] is not None
-        ), "Sound name is required for GeminiPipeline!"
+        assert sample["sound_name"] is not None, "Sound name is required for GeminiPipeline!"
 
         model_input = {
             "prompt": prompt_factory["pipeline_video"](
@@ -289,10 +275,7 @@ class GeminiPipeline(BaseModel):
         self, model_input: Dict[str, str | Dict[str, str]], prompt_type: str, **kwargs
     ) -> Dict:
         """Process the model input and handle retries on failure."""
-        assert (
-            prompt_type == "multimodal"
-            or prompt_type == "pipeline_event_classification"
-        )
+        assert prompt_type == "multimodal" or prompt_type == "pipeline_event_classification"
 
         if prompt_type == "multimodal":
             audio_response = self.prompt_to_extract_timestamps(model_input)

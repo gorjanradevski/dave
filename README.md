@@ -23,8 +23,13 @@ DAVE is a diagnostic benchmark that tests audio-visual models by ensuring both m
 git clone https://github.com/gorjanradevski/dave.git
 cd dave
 pip install torch datasets google-generativeai openai
-````
+```
 
+In case you want to regenerate the dataset from scratch, you will also need to install:
+
+```bash
+pip install moviepy ffmpeg-python
+```
 ---
 
 ## 📂 Dataset Setup

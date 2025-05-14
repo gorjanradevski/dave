@@ -10,6 +10,7 @@ from utils.prompts import prompt_factory
 # from external.pandagpt.code.model.openllama import OpenLLAMAPEFTModel
 # (2) Then remove the dummy model;
 
+
 class OpenLLAMAPEFTModel:
 
     def __init__(self):
@@ -18,8 +19,11 @@ class OpenLLAMAPEFTModel:
     def __call__(self):
         pass
 
+
 # (3) Create the checkpoints path where the downloaded checkpoints are placed
 CHECKPOINTS_PATH = Path("path_for_the_pretrained_checkpoints")
+
+
 class PandaGPTModel(BaseModel):
 
     def __init__(self, **kwargs):
@@ -27,10 +31,7 @@ class PandaGPTModel(BaseModel):
             "model": "openllama_peft",
             "imagebind_ckpt_path": CHECKPOINTS_PATH / "imagebind_ckpt",
             "vicuna_ckpt_path": CHECKPOINTS_PATH / "vicuna_ckpt" / "vicuna-13b-v1.5",
-            "delta_ckpt_path": CHECKPOINTS_PATH
-            / "pandagpt_ckpt"
-            / "13b"
-            / "pytorch_model.pt",
+            "delta_ckpt_path": CHECKPOINTS_PATH / "pandagpt_ckpt" / "13b" / "pytorch_model.pt",
             "stage": 2,
             "max_tgt_len": 128,
             "lora_r": 32,
@@ -38,9 +39,7 @@ class PandaGPTModel(BaseModel):
             "lora_dropout": 0.1,
         }
         self.model = OpenLLAMAPEFTModel(**args)
-        delta_ckpt = torch.load(
-            args["delta_ckpt_path"], map_location=torch.device("cpu")
-        )
+        delta_ckpt = torch.load(args["delta_ckpt_path"], map_location=torch.device("cpu"))
         self.model.load_state_dict(delta_ckpt, strict=False)
         self.model = self.model.eval()
         self.model = self.model.half().cuda()
@@ -57,14 +56,10 @@ class PandaGPTModel(BaseModel):
                 "prompt": model_input["prompt"],
                 "image_paths": [],
                 "audio_paths": (
-                    [model_input["file_path_audio"]]
-                    if model_input["file_path_audio"]
-                    else []
+                    [model_input["file_path_audio"]] if model_input["file_path_audio"] else []
                 ),
                 "video_paths": (
-                    [model_input["file_path_video"]]
-                    if model_input["file_path_video"]
-                    else []
+                    [model_input["file_path_video"]] if model_input["file_path_video"] else []
                 ),
                 "thermal_paths": [],
                 "do_sample": False,
@@ -78,9 +73,7 @@ class PandaGPTModel(BaseModel):
         matched_letter = self.extract_letter(response_text)
 
         return {
-            "response_text": (
-                f"({matched_letter})" if matched_letter else "No answer found!"
-            ),
+            "response_text": (f"({matched_letter})" if matched_letter else "No answer found!"),
             "llm_output": response_text,
         }
 
@@ -92,9 +85,7 @@ class PandaGPTModel(BaseModel):
         file_path = sample["file_path"]
 
         if prompt_type == "multimodal":
-            video_file_path, audio_file_path = file_path.get("video"), file_path.get(
-                "audio"
-            )
+            video_file_path, audio_file_path = file_path.get("video"), file_path.get("audio")
         elif prompt_type in [
             "audio",
             "overlayed_full_audio_classification",

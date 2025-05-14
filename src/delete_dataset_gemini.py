@@ -16,6 +16,7 @@ def delete_file(google_file_id):
     except PermissionDenied:
         pass
 
+
 def main():
     parser = argparse.ArgumentParser(description="Delete dataset files from GenAI.")
     parser.add_argument(
@@ -33,11 +34,14 @@ def main():
     file_mapping_values = list(reversed(file_mapping.values()))  # Delete in reverse
 
     print("Deleting files...")
-    
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.num_threads) as executor:
-        futures = {executor.submit(delete_file, file_id): file_id for file_id in file_mapping_values}
+        futures = {
+            executor.submit(delete_file, file_id): file_id for file_id in file_mapping_values
+        }
         for _ in tqdm(concurrent.futures.as_completed(futures), total=len(file_mapping_values)):
             pass
+
 
 if __name__ == "__main__":
     main()

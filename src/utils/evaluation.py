@@ -8,9 +8,7 @@ class Evaluator:
         if self.prompt_type == "temporal_video":
             if len(prediction) != len(ground_truth):
                 return False
-            return all(
-                prediction[idx] == ground_truth[idx] for idx in range(len(ground_truth))
-            )
+            return all(prediction[idx] == ground_truth[idx] for idx in range(len(ground_truth)))
         return prediction in ground_truth
 
     def process_sample(self, prediction, ground_truth):
@@ -20,11 +18,7 @@ class Evaluator:
         return is_correct
 
     def evaluate(self):
-        return (
-            self.stats["correct"] / self.stats["total"] * 100
-            if self.stats["total"]
-            else 0
-        )
+        return self.stats["correct"] / self.stats["total"] * 100 if self.stats["total"] else 0
 
     @staticmethod
     def compute_timestamp_accuracy(

@@ -15,9 +15,7 @@ class BaseModel(ABC):
         pass
 
     @abstractmethod
-    def prepare_model_input(
-        self, sample: Dict, prompt_suffix: str, **kwargs
-    ) -> Dict[Any, Any]:
+    def prepare_model_input(self, sample: Dict, prompt_suffix: str, **kwargs) -> Dict[Any, Any]:
         pass
 
     @staticmethod

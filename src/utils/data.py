@@ -160,14 +160,10 @@ class DatasetWrapper:
             return sample["correct_temporal_order"]
         elif prompt_type == "video_segment":
             # overlayed_event_index is re-mapped to point to the "multimodal" group of prompts
-            correct_event = sample["raw_choices_multimodal"][
-                sample["overlayed_event_index"]
-            ]
+            correct_event = sample["raw_choices_multimodal"][sample["overlayed_event_index"]]
             correct_event = self.remove_ordinal_suffix(correct_event)
             correct_indices = [
-                i
-                for i, choice in enumerate(raw_choices)
-                if choice.lower() == correct_event
+                i for i, choice in enumerate(raw_choices) if choice.lower() == correct_event
             ]
             return [f"({chr(65 + i)})" for i in correct_indices]
         elif prompt_type in [
@@ -203,9 +199,7 @@ class DatasetWrapper:
         gt_start = format_to_mm_ss(gt_start)
         gt_end = format_to_mm_ss(gt_end)
 
-        gt_seconds_start, gt_seconds_end = self.extract_timestamps(
-            f"[{gt_start}, {gt_end}]"
-        )
+        gt_seconds_start, gt_seconds_end = self.extract_timestamps(f"[{gt_start}, {gt_end}]")
 
         return gt_seconds_start, gt_seconds_end
 
@@ -247,6 +241,4 @@ class DatasetWrapper:
             return timestamp_start, timestamp_end
 
         else:
-            raise ValueError(
-                f"Invalid format for timestamps conversion: {timestamps_string}"
-            )
+            raise ValueError(f"Invalid format for timestamps conversion: {timestamps_string}")
