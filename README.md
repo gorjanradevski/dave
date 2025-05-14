@@ -90,6 +90,23 @@ prompt = f"""What is the person in the video doing when {audio_class} is heard? 
 # Run your model
 # prediction = your_model.predict(video_path, prompt)
 ```
+---
+
+## 🐍 Inference with Open-Source Models
+
+To run inference using open-source audio-visual models such as **Video-LLaMA**, **PandaGPT**, or **Video-SALMONN**, follow the setup instructions provided in their respective repositories:
+
+* [Video-LLaMA2](https://github.com/DAMO-NLP-SG/VideoLLaMA2)
+* [PandaGPT](https://github.com/yxuansu/PandaGPT)
+* [Video-SALMONN](https://github.com/bytedance/SALMONN/blob/main/video_salmonn)
+
+Once set up, place each model inside the `src/external/` directory using the following structure:
+
+```bash
+src/external/video_llama/
+src/external/pandagpt/
+src/external/video_salmonn/
+```
 
 ---
 
