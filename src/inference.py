@@ -141,7 +141,6 @@ def main():
 
             dataset = DatasetWrapper(
                 data_samples=data_samples,
-                data_dir_path=args.data_dir_path,
                 prompt_type=prompt_type,
             )
             evaluator = Evaluator(prompt_type=prompt_type)
@@ -152,7 +151,6 @@ def main():
                     model_input = model.prepare_model_input(
                         sample=sample,
                         prompt_suffix=dataset.prompt_suffix,
-                        data_dir_path=args.data_dir_path,
                     )
                     response_dict = model.inference(
                         model_input=model_input, prompt_type=prompt_type

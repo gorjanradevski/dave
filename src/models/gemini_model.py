@@ -56,10 +56,6 @@ class GeminiModel(BaseModel):
         raw_choices = sample.get("raw_choices", None)
         question = sample.get("question", None)
 
-        # Get the data directory path from the keyword arguments
-        data_dir_path = kwargs.get("data_dir_path", None)
-
-        assert data_dir_path is not None, "Data directory path is required for GeminiModel!"
         model_input = {
             "prompt": prompt_factory[sample["prompt_type"]](
                 sound_name=sound_name,
@@ -76,11 +72,11 @@ class GeminiModel(BaseModel):
         # Get file_path relative to the data directory
         if isinstance(sample["file_path"], dict):
             model_input["file_path"] = {
-                k: Path("data") / v.relative_to(data_dir_path)
+                k: Path(v)
                 for k, v in sample["file_path"].items()
             }
         else:
-            model_input["file_path"] = Path("data") / sample["file_path"].relative_to(data_dir_path)
+            model_input["file_path"] = Path(sample["file_path"])
 
         return model_input
 

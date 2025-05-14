@@ -28,11 +28,9 @@ class DatasetWrapper:
         self,
         data_samples: List[Dict[str, Any]],
         prompt_type: str,
-        data_dir_path: str,
     ):
         self.data_samples = data_samples
         self.prompt_type = prompt_type
-        self.data_dir_path = Path(data_dir_path)
 
     def get_raw_choices(self, sample: Dict[str, Any]):
         raw_choices = sample[f"raw_choices_{self.prompt_type}"]
@@ -123,16 +121,10 @@ class DatasetWrapper:
         if isinstance(mapping, dict):
             file_path = {k: Path(sample[v]) for k, v in mapping.items()}
             # Doing this because the file paths are relative to the data directory
-            file_path = {
-                k: self.data_dir_path / f_path.relative_to("data")
-                for k, f_path in file_path.items()
-            }
         elif mapping is None:
             file_path = None
         else:
             file_path = Path(sample[mapping])
-            # Doing this because the file paths are relative to the data directory
-            file_path = self.data_dir_path / file_path.relative_to("data")
 
         return file_path
 
