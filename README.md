@@ -14,6 +14,7 @@ DAVE is a diagnostic benchmark that tests audio-visual models by ensuring both m
 - Construct multimodal prompts
 - Run inference with Gemini/OpenAI or your own models
 - Evaluate predictions against ground truth
+- Reproduce the main results in the paper
 
 ---
 
@@ -47,21 +48,22 @@ dataset = load_dataset("gorjanradevski/dave", split="epic", trust_remote_code=Tr
 
 ## 🚀 Inference with Gemini/OpenAI Models
 
-1. **Set your API keys:**
+1. **Set your API keys**
 
 ```bash
 export OPENAI_API_KEY="..."
 export GOOGLE_API_KEY="..."
 ```
 
-2. **Upload the dataset to Google for Gemini-based inference:**
+2. **Upload the dataset to Google for Gemini-based inference**
 
 ```bash
 python src/upload_dataset_gemini.py --split epic --output_path data/epic_gemini_mapping.json
 ```
 
-3. **Run inference using Gemini:**
+3. **Run inference**
 
+**Using Gemini**
 ```bash
 python src/inference.py --split epic \
   --google_id_mapping_path data/epic_gemini_mapping.json \
@@ -69,17 +71,34 @@ python src/inference.py --split epic \
   --prompt_types multimodal
 ```
 
+**Using OpenAI**
+```bash
+python src/inference.py --split epic \
+  --model_names openai \
+  --prompt_types multimodal
+```
+
 This will save the predictions for the `epic` split in a `results`folder.
 
 ---
 
-4. **Evaluate across question types**
+4. **Evaluate predictions**
 
+**To reproduce our main results**
+
+```bash
+python src/evaluate_predictions.py --result_dir results/
+```
+This will generate results across:
+- DAVE's three question types: **multimodal synchronization**, **sound absence detection**, and **sound discrimination**;
+- DAVE’s atomic tasks: **temporal ordering**, **audio classification**, and **action recognition**;
+- different modalities: **video + text**, **audio + text**, **text**.
+
+**To evaluate your own predictions file**
 ```bash
 python src/evaluate_predictions.py --predictions_file /path/to/predictions.json
 ```
 
-This will generate results across DAVE's three diagnostic tasks: **multimodal synchronization**, **sound absence detection**, and **sound discrimination**.
 
 ---
 
