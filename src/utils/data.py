@@ -41,7 +41,7 @@ class DatasetWrapper:
         return raw_choices
 
     def __getitem__(self, idx: int):
-        sample = self.huggingface_dataset[idx]
+        sample = self.data_samples[idx]
         file_path = self.get_file_paths(sample, prompt_type=self.prompt_type)
         raw_choices = self.get_raw_choices(sample=sample)
         ground_truth = self.get_ground_truth(

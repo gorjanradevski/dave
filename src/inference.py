@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -111,6 +112,8 @@ def main():
 
     if google_id_mapping is not None:
         data_samples = filter_available_samples(huggingface_dataset, google_id_mapping)
+    else:
+        data_samples = huggingface_dataset
 
     if not data_samples:
         raise ValueError("No valid samples found after filtering!")
@@ -122,8 +125,6 @@ def main():
     print(f"Dataset split for DAVE: {args.split}")
     print("*" * 50)
 
-    latex_prompt_types = " & ".join(args.prompt_types)
-
     all_predictions = {
         "predictions": {mn: {p: [] for p in args.prompt_types} for mn in args.model_names},
     }
@@ -134,7 +135,6 @@ def main():
             model_name=model_name, google_id_mapping=google_id_mapping
         )
 
-        latex_row = f"{model_name} "
         for prompt_type in args.prompt_types:
 
             data_samples = filter_by_prompt(data_samples, prompt_type=prompt_type)
@@ -166,6 +166,11 @@ def main():
                             *sample["ground_truth_timestamps"],
                         )
 
+                    if args.verbose:
+                        print(f"Prompt: {model_input['prompt']}")
+                        print(f"Response: {response_dict['response_text']}")
+                        print(f"Ground truth: {sample['ground_truth']}")
+
                     all_predictions["predictions"][model_name][prompt_type].append(
                         {
                             "response_dict": response_dict,
@@ -185,14 +190,11 @@ def main():
             # Calculate and display results
             accuracy = evaluator.evaluate()
             print(f"Accuracy: {accuracy:.2f}%")
-            latex_row += f"& {accuracy:.2f} "
-
-        latex_row += "\\\\"
-
-        print("*" * 50)
-        print(latex_prompt_types)
-        print(latex_row)
-        print("*" * 50)
+            
+            os.makedirs("results", exist_ok=True)
+            output_file = os.path.join("results", f"predictions_{args.split}.json")
+            json.dump(all_predictions, open(output_file, "w"), indent=4)
+            print(f"Predictions saved to: {output_file}")
 
 
 if __name__ == "__main__":

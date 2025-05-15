@@ -9,6 +9,8 @@ model_choices = [
     "gemini-2.0-flash-001" "random",
 ]
 
+CATEGORIES = ['joint', 'regular', 'none_of_the_above_no_sound', 'none_of_the_above_incorrect_audio']
+
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 BASE_DATETIME = datetime(1900, 1, 1)

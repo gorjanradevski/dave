@@ -22,7 +22,7 @@ DAVE is a diagnostic benchmark that tests audio-visual models by ensuring both m
 ```bash
 git clone https://github.com/gorjanradevski/dave.git
 cd dave
-pip install torch datasets google-generativeai openai
+pip install torch datasets google-generativeai google-genai openai opencv-python Pillow
 ```
 
 In case you want to regenerate the dataset from scratch, you will also need to install:
@@ -69,7 +69,17 @@ python src/inference.py --split epic \
   --prompt_types multimodal
 ```
 
-This will generate results for the `epic` split across DAVE's three diagnostic tasks: **multimodal synchronization**, **sound absence detection**, and **sound discrimination**.
+This will save the predictions for the `epic` split in a `results`folder.
+
+---
+
+4. **Evaluate across question types**
+
+```bash
+python src/evaluate_predictions.py --predictions_file /path/to/predictions.json
+```
+
+This will generate results across DAVE's three diagnostic tasks: **multimodal synchronization**, **sound absence detection**, and **sound discrimination**.
 
 ---
 
@@ -90,7 +100,9 @@ prompt = f"""What is the person in the video doing when {audio_class} is heard? 
 (A) {options[0]}
 (B) {options[1]}
 (C) {options[2]}
-(D) {options[3]}"""
+(D) {options[3]}
+(E) none of the above
+"""
 
 # Run your model
 # prediction = your_model.predict(video_path, prompt)
@@ -133,3 +145,7 @@ If you use this benchmark or codebase, please cite:
 ## 📫 Contact
 
 For questions, open an issue or contact: `firstname.lastname@kuleuven.be`
+
+## 📝 License
+
+Everything is licensed under the [MIT License](https://opensource.org/licenses/MIT).
