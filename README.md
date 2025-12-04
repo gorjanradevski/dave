@@ -2,7 +2,7 @@
 
 ![Overview of DAVE](./data/assets/teaser.png)
 
-This repository contains the official inference code for **[DAVE: Diagnostic Benchmark for Audio-Visual Evaluation](https://arxiv.org/abs/2503.09321)**. Use this code to evaluate your audio-visual models on the [DAVE dataset](https://huggingface.co/datasets/gorjanradevski/dave).
+This repository contains the official inference code for **[DAVE: Diagnostic Benchmark for Audio-Visual Evaluation](https://openreview.net/pdf?id=4ZAX1NT0ms)**. Use this code to evaluate your audio-visual models on the [DAVE dataset](https://huggingface.co/datasets/gorjanradevski/dave).
 
 ---
 
@@ -39,9 +39,41 @@ You can load the dataset via Hugging Face:
 
 ```python
 from datasets import load_dataset
+import random
 
-# split="epic" or split="ego4d"
-dataset = load_dataset("gorjanradevski/dave", split="epic", trust_remote_code=True)
+ego4d_dataset = load_dataset("gorjanradevski/dave", split="ego4d", keep_in_memory=True, trust_remote_code=True)
+# or
+epic_dataset = load_dataset("gorjanradevski/dave", split="epic", keep_in_memory=True, trust_remote_code=True)
+
+# Perform inference with an audio-visual model for audio-visual alignment task
+sample = random.choice(epic_dataset)
+
+# Obtain the audio/sound that is overlayed on the video
+sound_effect = sample["audio_class"]
+
+# Get the video path where the specific event is overlayed with an audio
+video_path = sample["video_with_overlayed_audio_path"]
+
+# For audio-visual alignment task: find which action matches the overlayed audio
+options = sample["choice_metadata"]["audio_visual_alignment"]["choices"]
+ground_truth_index = sample["choice_metadata"]["audio_visual_alignment"]["ground_truth"]
+ground_truth = options[ground_truth_index]
+
+# Construct the prompt
+prompt = f"""What is the person in the video doing when {sound_effect} is heard? Answer using one of the following options:
+
+(A) {options[0]}
+(B) {options[1]}
+(C) {options[2]}
+(D) {options[3]}
+(E) {options[4]}
+
+Answer only with the letter corresponding to the choice."""
+
+# Load the video and perform inference with any model that can process audio and video input
+# or, if you want to visually see the video and the prompt that could be provided to the model:
+# print(prompt)
+# display(Video(sample["video_with_overlayed_audio_path"], embed=True))
 ```
 
 ---
@@ -91,7 +123,7 @@ python src/evaluate_predictions.py --result_dir results/
 ```
 This will generate results across:
 - DAVE's three question types: **multimodal synchronization**, **sound absence detection**, and **sound discrimination**;
-- DAVE’s atomic tasks: **temporal ordering**, **audio classification**, and **action recognition**;
+- DAVE's atomic tasks: **temporal ordering**, **audio classification**, and **action recognition**;
 - different modalities: **video + text**, **audio + text**, **text**.
 
 **To evaluate your own predictions file**
@@ -105,25 +137,35 @@ python src/evaluate_predictions.py --predictions_file /path/to/predictions.json
 ## 🧪 Inference with Your Own Model
 
 ```python
+from datasets import load_dataset
 import random
-sample = random.choice(dataset)
 
-# Access necessary fields
-audio_class = sample["audio_class"]
-options = sample["raw_choices_multimodal"]
+epic_dataset = load_dataset("gorjanradevski/dave", split="epic", keep_in_memory=True, trust_remote_code=True)
+sample = random.choice(epic_dataset)
+
+# Obtain the audio/sound that is overlayed on the video
+sound_effect = sample["audio_class"]
+
+# Get the video path where the specific event is overlayed with an audio
 video_path = sample["video_with_overlayed_audio_path"]
-ground_truth = options[sample["overlayed_event_index"]]
 
-# Prompt for the model
-prompt = f"""What is the person in the video doing when {audio_class} is heard? Choose one:
+# For audio-visual alignment task: find which action matches the overlayed audio
+options = sample["choice_metadata"]["audio_visual_alignment"]["choices"]
+ground_truth_index = sample["choice_metadata"]["audio_visual_alignment"]["ground_truth"]
+ground_truth = options[ground_truth_index]
+
+# Construct the prompt
+prompt = f"""What is the person in the video doing when {sound_effect} is heard? Answer using one of the following options:
+
 (A) {options[0]}
 (B) {options[1]}
 (C) {options[2]}
 (D) {options[3]}
-(E) none of the above
-"""
+(E) {options[4]}
 
-# Run your model
+Answer only with the letter corresponding to the choice."""
+
+# Load the video and perform inference with any model that can process audio and video input
 # prediction = your_model.predict(video_path, prompt)
 ```
 ---
@@ -151,11 +193,13 @@ src/external/video_salmonn/
 If you use this benchmark or codebase, please cite:
 
 ```bibtex
-@article{radevski2025dave,
-  title={DAVE: Diagnostic benchmark for Audio Visual Evaluation},
-  author={Radevski, Gorjan and Popordanoska, Teodora and Blaschko, Matthew B and Tuytelaars, Tinne},
-  journal={arXiv preprint arXiv:2503.09321},
-  year={2025}
+@inproceedings{
+radevski2025dave,
+title={{DAVE}: Diagnostic benchmark for Audio Visual Evaluation},
+author={Gorjan Radevski and Teodora Popordanoska and Matthew B. Blaschko and Tinne Tuytelaars},
+booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems Datasets and Benchmarks Track},
+year={2025},
+url={https://openreview.net/forum?id=4ZAX1NT0ms}
 }
 ```
 
@@ -163,8 +207,11 @@ If you use this benchmark or codebase, please cite:
 
 ## 📫 Contact
 
-For questions, open an issue or contact: `firstname.lastname@kuleuven.be`
+Reach out to either Gorjan at firstname.lastname@gmail.com or Teodora at: firstname.lastname@kuleuven.be
+
+---
 
 ## 📝 License
 
 Everything is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
